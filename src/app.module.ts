@@ -3,12 +3,19 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TweetsModule } from './tweets/tweets.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule } from '@nestjs/config';
+import { join } from 'path';
 
-const uri = `mongodb://root:root@db:27017/app?authSource=admin`;
-
+// banco de dados é criado se não existe
 @Module({
   imports: [
-    MongooseModule.forRoot(uri), // bd criado se não existe
+    ConfigModule.forRoot({
+      envFilePath: [
+        join(__dirname, '..', `.env.${process.env.NODE_ENV}`),
+        join(__dirname, '..', '.env'),
+      ],
+    }),
+    MongooseModule.forRoot(process.env.MONGO_DSN),
     TweetsModule,
   ],
   controllers: [AppController],
